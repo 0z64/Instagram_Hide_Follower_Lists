@@ -1,27 +1,25 @@
 # Hide Follower & Following Lists
 
-A small Python script that requests Instagram's `hide_followers_following_list` account setting be enabled for the account associated with your session. It uses an unofficial Instagram endpoint, so it may stop working or the setting may not be available for your account. It does not guarantee that your lists will be hidden from everyone; check the result in Instagram.
+A Python script that asks Instagram to enable the hidden follower/following lists setting on your account.
 
-## Requirements
+## How to use
 
-- Python 3 (standard library only; no packages to install)
-- Your own Instagram `sessionid` cookie value for the account you want to update
-- An internet connection
+1. Log in to **your own account** at [instagram.com](https://www.instagram.com/) in Chrome on a computer.
+2. Open Developer Tools (`F12` or `Cmd+Option+I` on Mac). Go to **Application → Cookies → instagram.com**, then find the `sessionid` row and copy its **Value**.
 
-## Usage
+   ![Where to find the sessionid cookie in Chrome Developer Tools; cookie values are hidden in this example](assets/find-sessionid.jpg)
 
-From this directory, run:
+3. Install Python 3 if needed, then run this from the project folder (no extra packages required):
 
-```bash
-python3 hide_lists.py
-```
+   ```bash
+   python3 hide_lists.py
+   ```
 
-When prompted, enter **only the value** of your own `sessionid` cookie, not `sessionid=` or an entire cookie header. The input is hidden while you type. The script makes one request to `https://i.instagram.com/graphql/query` and prints `Enabled: Instagram returned value=true.` only if Instagram's response confirms the setting was enabled. Otherwise, it prints an error and exits with a nonzero status. It does not retry automatically.
+4. Paste **only the cookie value** when prompted (not `sessionid=`). Your input will not appear on screen. If Instagram confirms the change, the script prints `Enabled: Instagram returned value=true.`
+5. Check your account from another account to see whether the lists are hidden. Example result:
 
-## Security and limitations
+   ![Example Instagram screen showing a hidden followers list](assets/result.jpeg)
 
-- A session cookie grants access to your account. Never share it, paste it into an issue, commit it, or use someone else's cookie. If you believe it was exposed, sign out of affected sessions in Instagram and secure your account.
-- The script sends your cookie to Instagram to authenticate the request. It does not save the cookie to a file. Redirects and environment-configured proxies are disabled for this request.
-- This is not an official Instagram tool. Instagram may reject the request, change the endpoint, or restrict availability of the setting without notice.
-- If the request times out or is interrupted, the change **may already have been applied**. Check the setting in Instagram before trying again.
-- This script only requests that the setting be enabled; it does not include a way to disable it.
+**Keep your `sessionid` private.** It grants access to your account. Never share it or post a screenshot showing its value. The script sends it to Instagram to make the request but does not save it to a file.
+
+**Note:** This uses an unofficial Instagram endpoint. It may not work for every account or may stop working. A success message means Instagram confirmed the setting, not that every viewer will see the same result. If a request times out, check your account before running it again. The script does not turn the setting off.
