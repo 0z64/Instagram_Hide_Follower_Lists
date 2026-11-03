@@ -15,11 +15,17 @@ A Python script that asks Instagram to enable the hidden follower/following list
    python3 hide_lists.py
    ```
 
-4. Paste **only the cookie value** when prompted (not `sessionid=`). Your input will not appear on screen. If Instagram confirms the change, the script prints `Enabled: Instagram returned value=true.`
+   To show the lists again, add `--unhide`:
+
+   ```bash
+   python3 hide_lists.py --unhide
+   ```
+
+4. Paste **only the cookie value** when prompted (not `sessionid=`). Your input will not appear on screen. If Instagram confirms the change, the script prints `Enabled: Instagram returned value=true. Lists are hidden.` (or `Disabled: Instagram returned value=false. Lists are visible again.` with `--unhide`).
 5. Check your account from another account to see whether the lists are hidden. Example result:
 
    ![Example Instagram screen showing a hidden followers list](assets/result.jpeg)
 
 **Keep your `sessionid` private.** It grants access to your account. Never share it or post a screenshot showing its value. The script sends it to Instagram to make the request but does not save it to a file.
 
-**Note:** This uses an unofficial Instagram endpoint. It may not work for every account or may stop working. A success message means Instagram confirmed the setting, not that every viewer will see the same result. If a request times out, check your account before running it again. The script does not turn the setting off.
+**Note:** This uses an unofficial Instagram endpoint. It may not work for every account or may stop working. A success message means Instagram confirmed the setting, not that every viewer will see the same result. If a request times out, check your account before running it again.

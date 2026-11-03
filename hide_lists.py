@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 
 
-def hide_lists(sessionid: str) -> dict:
+def hide_lists(sessionid: str, hide: bool = True) -> dict:
     if not sessionid or any(ord(c) <= 32 or ord(c) >= 127 or c in ';,"\\' for c in sessionid):
         raise ValueError("Enter only the sessionid cookie value, without 'sessionid='.")
     match = re.fullmatch(r"([1-9][0-9]*)(?::|%3[aA]).+", sessionid)
@@ -33,7 +33,7 @@ def hide_lists(sessionid: str) -> dict:
             "setting_id": "hide_followers_following_list",
             "allow_error_codes": True,
             "callsite": "account_privacy",
-            "value": True,
+            "value": hide,
         }),
     }
     request = urllib.request.Request(
@@ -88,21 +88,30 @@ def hide_lists(sessionid: str) -> dict:
 
 
 def main() -> int:
+    args = sys.argv[1:]
+    if args not in ([], ["--unhide"]):
+        print("Usage: python3 hide_lists.py [--unhide]", file=sys.stderr)
+        return 2
+    hide = args != ["--unhide"]
+    action = "enabling" if hide else "disabling"
     session = getpass.getpass("Your Instagram sessionid value: ").strip()
     try:
-        body = hide_lists(session)
+        body = hide_lists(session, hide)
         data = body.get("data") if isinstance(body, dict) else None
         root = "xdt_api__v1__settings__set_bool"
         matches = [value for key, value in data.items()
                    if key == root or key.startswith(root + "(")] if isinstance(data, dict) else []
         result = matches[0] if len(matches) == 1 and isinstance(matches[0], dict) else {}
         if (not isinstance(body, dict) or body.get("errors") or body.get("error")
-                or body.get("status") == "fail" or result.get("value") is not True
+                or body.get("status") == "fail" or result.get("value") is not hide
                 or any(result.get(key) for key in (
                     "error_name_value", "errorNameValue", "fallback_message", "fallbackMessage"
                 ))):
-            raise RuntimeError("Instagram did not confirm enabling the setting. No retry performed.")
-        print("Enabled: Instagram returned value=true.")
+            raise RuntimeError(f"Instagram did not confirm {action} the setting. No retry performed.")
+        if hide:
+            print("Enabled: Instagram returned value=true. Lists are hidden.")
+        else:
+            print("Disabled: Instagram returned value=false. Lists are visible again.")
         return 0
     except RuntimeError as error:
         print(error, file=sys.stderr)
